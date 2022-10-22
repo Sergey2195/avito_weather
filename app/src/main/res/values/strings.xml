@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Avito weather</string>
+    <string name="weather_title">Погода</string>
+    <string name="location_title">Локация</string>
+    <string name="enter_city_hint">Введите город</string>
+    <style name="format_temp_min">min %d°</style>
+    <style name="format_temp_max">max %d°</style>
 </resources>
