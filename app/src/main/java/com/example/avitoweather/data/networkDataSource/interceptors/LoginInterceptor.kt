@@ -1,9 +1,11 @@
 package com.example.avitoweather.data.networkDataSource.interceptors
 
+import com.example.avitoweather.di.ApplicationScope
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
+@ApplicationScope
 class LoginInterceptor @Inject constructor(
     private val apiKeyWeather: String
 ): Interceptor {

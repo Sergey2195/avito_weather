@@ -7,5 +7,8 @@ data class ForecastElement(
     val date: String?,
 
     @SerializedName("parts")
-    val parts: Parts
+    val parts: Parts,
+
+    @SerializedName("hours")
+    val hourElement: List<HourElement>
 )

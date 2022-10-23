@@ -1,5 +1,6 @@
 package com.example.avitoweather.data.networkDataSource.models
 
+import com.example.avitoweather.data.networkDataSource.models.geoObject.GeoObject
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
@@ -14,7 +15,7 @@ data class AllDataResponse(
     val info: JsonObject?,
 
     @SerializedName("geo_object")
-    val geoObject: JsonObject?,
+    val geoObject: GeoObject?,
 
     @SerializedName("yesterday")
     val yesterday: JsonObject?,

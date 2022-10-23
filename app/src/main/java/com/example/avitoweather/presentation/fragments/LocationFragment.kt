@@ -1,4 +1,4 @@
-package com.example.avitoweather.presentation
+package com.example.avitoweather.presentation.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -21,8 +21,10 @@ class LocationFragment : Fragment() {
     }
 
     companion object {
-        fun newInstance(): LocationFragment{
+        fun newInstance(): LocationFragment {
             return LocationFragment()
         }
+
+        const val FRAGMENT_NAME = "LocationFragment"
     }
 }

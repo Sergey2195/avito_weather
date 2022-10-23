@@ -17,16 +17,19 @@ interface NetworkModule {
 
     companion object{
 
+        @ApplicationScope
         @Provides
         fun provideWeatherApiKeyWrapper(): WeatherApiKeyWrapper{
             return WeatherApiKeyWrapper("c3d99852-3260-4d95-8a21-26cd6fe95838")
         }
 
+        @ApplicationScope
         @Provides
         fun provideBaseUrlWrapper():BaseUrlWrapper{
             return BaseUrlWrapper("https://api.weather.yandex.ru/v2/")
         }
 
+        @ApplicationScope
         @Provides
         fun provideLoginInterceptor (
             weatherApiKeyWrapper: WeatherApiKeyWrapper
@@ -34,11 +37,13 @@ interface NetworkModule {
             return LoginInterceptor(weatherApiKeyWrapper.apiKey)
         }
 
+        @ApplicationScope
         @Provides
         fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
             return HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
         }
 
+        @ApplicationScope
         @Provides
         fun provideOkHttpClient(
             loginInterceptor: LoginInterceptor,
@@ -50,12 +55,14 @@ interface NetworkModule {
                 .build()
         }
 
+        @ApplicationScope
         @Provides
         fun provideGsonConverterFactory(): GsonConverterFactory{
             return GsonConverterFactory.create()
         }
 
 
+        @ApplicationScope
         @Provides
         fun provideRetrofit(
             okHttpClient: OkHttpClient,
