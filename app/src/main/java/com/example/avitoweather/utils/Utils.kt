@@ -11,6 +11,7 @@ import coil.request.ImageRequest
 import com.example.avitoweather.R
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 
 object Utils {

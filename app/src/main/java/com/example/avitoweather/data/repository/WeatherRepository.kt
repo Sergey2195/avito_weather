@@ -44,8 +44,8 @@ class WeatherRepository @Inject constructor(
             if (result.actualWeather == null) return
             setupNowTime(result.nowTime ?: 0)
             val namesOfGeoObject = NamesOfGeoObject(
-                result.geoObject?.locality?.name.toString(),
-                result.geoObject?.district?.name.toString()
+                result.geoObject?.locality?.name ?: "",
+                result.geoObject?.district?.name ?: ""
             )
             val actualWeather = CurrentDayWeather(
                 time = result.nowTime.toString(),

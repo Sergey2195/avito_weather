@@ -2,6 +2,7 @@ package com.example.avitoweather.di
 
 import android.app.Application
 import com.example.avitoweather.presentation.MainActivity
+import com.example.avitoweather.presentation.fragments.LocationFragment
 import com.example.avitoweather.presentation.fragments.WeatherFragment
 import dagger.BindsInstance
 import dagger.Component
@@ -12,6 +13,7 @@ interface ApplicationComponent {
     fun injectApplication(app: Application)
     fun injectMainActivity(mainActivity: MainActivity)
     fun injectWeatherFragment(weatherFragment: WeatherFragment)
+    fun injectLocationFragment(locationFragment: LocationFragment)
 
     @Component.Factory
     interface Factory{
