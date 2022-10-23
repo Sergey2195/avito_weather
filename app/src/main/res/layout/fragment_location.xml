@@ -30,5 +30,14 @@
         app:layout_constraintBottom_toBottomOf="@id/searchEditText"
         android:src="@drawable/ic_u_search"
         android:layout_marginStart="10dp"/>
+    <ImageView
+        android:id="@+id/locationImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/searchEditText"
+        app:layout_constraintBottom_toBottomOf="@+id/searchEditText"
+        app:layout_constraintEnd_toEndOf="@+id/searchEditText"
+        android:src="@drawable/ic_baseline_my_location_24"
+        android:padding="20dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

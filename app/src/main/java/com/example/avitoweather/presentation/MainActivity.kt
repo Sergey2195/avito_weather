@@ -1,8 +1,12 @@
 package com.example.avitoweather.presentation
 
+import android.content.ContentProviderClient
 import android.content.Intent
+import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import com.example.avitoweather.App
 import com.example.avitoweather.R
@@ -10,6 +14,8 @@ import com.example.avitoweather.data.networkDataSource.apiCall.ApiCalls
 import com.example.avitoweather.databinding.ActivityMainBinding
 import com.example.avitoweather.presentation.fragments.LocationFragment
 import com.example.avitoweather.presentation.fragments.WeatherFragment
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import javax.inject.Inject
 

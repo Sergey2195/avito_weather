@@ -15,8 +15,8 @@ import com.example.avitoweather.databinding.FragmentWeatherBinding
 import com.example.avitoweather.domain.entites.CurrentDayWeather
 import com.example.avitoweather.presentation.adapters.CurrentTempListAdapter
 import com.example.avitoweather.presentation.adapters.ForecastListAdapter
-import com.example.avitoweather.presentation.utils.Utils.downloadImage
-import com.example.avitoweather.presentation.utils.Utils.formatTemp
+import com.example.avitoweather.utils.Utils.downloadImage
+import com.example.avitoweather.utils.Utils.formatTemp
 import com.example.avitoweather.presentation.viewModels.WeatherViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
 import kotlinx.coroutines.CoroutineScope

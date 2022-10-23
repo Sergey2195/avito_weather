@@ -8,8 +8,8 @@ import com.example.avitoweather.databinding.CurrentTempItemBinding
 import com.example.avitoweather.domain.entites.CurrentDayWeather
 import com.example.avitoweather.domain.entites.HoursForecast
 import com.example.avitoweather.presentation.diffUtils.CurrentDayWeatherDiffCallback
-import com.example.avitoweather.presentation.utils.Utils.downloadImage
-import com.example.avitoweather.presentation.utils.Utils.formatTemp
+import com.example.avitoweather.utils.Utils.downloadImage
+import com.example.avitoweather.utils.Utils.formatTemp
 import com.example.avitoweather.presentation.viewHolders.CurrentTempViewHolder
 
 class CurrentTempListAdapter : ListAdapter<HoursForecast, CurrentTempViewHolder>(CurrentDayWeatherDiffCallback()) {

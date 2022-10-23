@@ -7,8 +7,8 @@ import com.example.avitoweather.R
 import com.example.avitoweather.databinding.ForecastItemBinding
 import com.example.avitoweather.domain.entites.ForecastDay
 import com.example.avitoweather.presentation.diffUtils.ForecastDayDiffCallback
-import com.example.avitoweather.presentation.utils.Utils.downloadImage
-import com.example.avitoweather.presentation.utils.Utils.formatDate
+import com.example.avitoweather.utils.Utils.downloadImage
+import com.example.avitoweather.utils.Utils.formatDate
 import com.example.avitoweather.presentation.viewHolders.ForecastViewHolder
 
 class ForecastListAdapter :
