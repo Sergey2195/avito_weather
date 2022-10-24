@@ -6,9 +6,10 @@ import com.example.avitoweather.presentation.fragments.LocationFragment
 import com.example.avitoweather.presentation.fragments.WeatherFragment
 import dagger.BindsInstance
 import dagger.Component
+import kotlinx.coroutines.CoroutineScope
 
 @ApplicationScope
-@Component(modules = [NetworkModule::class, DataModule::class, ViewModelModule::class])
+@Component(modules = [WeatherNetworkModule::class, DataModule::class, ViewModelModule::class, LocationNetworkModule::class])
 interface ApplicationComponent {
     fun injectApplication(app: Application)
     fun injectMainActivity(mainActivity: MainActivity)
@@ -19,6 +20,7 @@ interface ApplicationComponent {
     interface Factory{
         fun create(
             @BindsInstance application: Application,
+            @BindsInstance applicationScope: CoroutineScope,
         ): ApplicationComponent
     }
 }

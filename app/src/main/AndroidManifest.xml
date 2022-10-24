@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AvitoWeather"
         android:name=".App"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".presentation.MainActivity"

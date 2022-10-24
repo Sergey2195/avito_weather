@@ -1,14 +1,39 @@
 package com.example.avitoweather.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
-import com.example.avitoweather.domain.useCases.SetLocationUseCase
+import androidx.lifecycle.viewModelScope
+import com.example.avitoweather.domain.entites.LocationState
+import com.example.avitoweather.domain.useCases.SetLocationLatLonUseCase
+import com.example.avitoweather.domain.useCases.SetLocationStringUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LocationViewModel @Inject constructor(
-    private val setLocationUseCase: SetLocationUseCase
+    private val setCurrentLocationUseCase: SetLocationLatLonUseCase,
+    private val setLocationWithString: SetLocationStringUseCase,
+    private val scope: CoroutineScope
 ) : ViewModel() {
 
+    private val findLocationMutableStateFlow = MutableStateFlow<LocationState?>(null)
+    val findLocation: StateFlow<LocationState?> = findLocationMutableStateFlow.asStateFlow()
+
     fun sendLocation(lat: String, lon: String) {
-        setLocationUseCase.invoke(lat, lon)
+        setCurrentLocationUseCase.invoke(lat, lon)
+    }
+
+    fun findAndSetLocation(str: String){
+        scope.launch {
+            val result = setLocationWithString.invoke(str)
+            findLocationMutableStateFlow.value = result
+        }
+    }
+
+    fun resetStateFlow(){
+        findLocationMutableStateFlow.value = null
     }
 }

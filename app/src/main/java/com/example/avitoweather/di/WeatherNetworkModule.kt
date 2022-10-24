@@ -1,9 +1,10 @@
 package com.example.avitoweather.di
 
-import com.example.avitoweather.data.networkDataSource.apiCall.ApiCalls
+import com.example.avitoweather.data.networkDataSource.apiCall.WeatherApiCalls
 import com.example.avitoweather.data.networkDataSource.interceptors.LoginInterceptor
-import com.example.avitoweather.data.networkDataSource.wrappers.BaseUrlWrapper
+import com.example.avitoweather.data.networkDataSource.wrappers.WeatherBaseUrlWrapper
 import com.example.avitoweather.data.networkDataSource.wrappers.WeatherApiKeyWrapper
+import com.example.avitoweather.di.qualifier.WeatherQualifier
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -12,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Module
-interface NetworkModule {
+interface WeatherNetworkModule {
 
 
     companion object{
@@ -25,8 +26,8 @@ interface NetworkModule {
 
         @ApplicationScope
         @Provides
-        fun provideBaseUrlWrapper():BaseUrlWrapper{
-            return BaseUrlWrapper("https://api.weather.yandex.ru/v2/")
+        fun provideBaseUrlWrapper():WeatherBaseUrlWrapper{
+            return WeatherBaseUrlWrapper("https://api.weather.yandex.ru/v2/")
         }
 
         @ApplicationScope
@@ -56,6 +57,7 @@ interface NetworkModule {
         }
 
         @ApplicationScope
+        @WeatherQualifier
         @Provides
         fun provideGsonConverterFactory(): GsonConverterFactory{
             return GsonConverterFactory.create()
@@ -63,24 +65,27 @@ interface NetworkModule {
 
 
         @ApplicationScope
+        @WeatherQualifier
         @Provides
         fun provideRetrofit(
             okHttpClient: OkHttpClient,
-            gsonConverterFactory: GsonConverterFactory,
-            baseUrlWrapper: BaseUrlWrapper,
+            @WeatherQualifier gsonConverterFactory: GsonConverterFactory,
+            weatherBaseUrlWrapper: WeatherBaseUrlWrapper,
         ): Retrofit {
             return Retrofit
                 .Builder()
                 .client(okHttpClient)
                 .addConverterFactory(gsonConverterFactory)
-                .baseUrl(baseUrlWrapper.baseUrl)
+                .baseUrl(weatherBaseUrlWrapper.baseUrl)
                 .build()
         }
 
         @Provides
         @ApplicationScope
-        fun provideApiCalls(retrofit: Retrofit): ApiCalls {
-            return retrofit.create(ApiCalls::class.java)
+        fun provideApiCalls(
+            @WeatherQualifier retrofit: Retrofit
+        ): WeatherApiCalls {
+            return retrofit.create(WeatherApiCalls::class.java)
         }
     }
 }

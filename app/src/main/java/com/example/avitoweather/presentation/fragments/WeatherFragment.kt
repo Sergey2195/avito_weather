@@ -2,6 +2,7 @@ package com.example.avitoweather.presentation.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,10 +20,7 @@ import com.example.avitoweather.utils.Utils.downloadImage
 import com.example.avitoweather.utils.Utils.formatTemp
 import com.example.avitoweather.presentation.viewModels.WeatherViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class WeatherFragment : Fragment() {
@@ -64,7 +62,14 @@ class WeatherFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             viewModel.weatherCurrentDayForecast.collect {
                 currentTempAdapter.submitList(it)
+                scrollToBegin()
             }
+        }
+    }
+
+    private suspend fun scrollToBegin(){
+        withContext(Dispatchers.Main){
+            binding.currentTempRv.smoothScrollToPosition(0)
         }
     }
 

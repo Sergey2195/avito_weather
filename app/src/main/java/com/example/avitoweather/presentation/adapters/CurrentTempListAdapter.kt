@@ -1,18 +1,19 @@
 package com.example.avitoweather.presentation.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.example.avitoweather.R
 import com.example.avitoweather.databinding.CurrentTempItemBinding
-import com.example.avitoweather.domain.entites.CurrentDayWeather
 import com.example.avitoweather.domain.entites.HoursForecast
 import com.example.avitoweather.presentation.diffUtils.CurrentDayWeatherDiffCallback
+import com.example.avitoweather.presentation.viewHolders.CurrentTempViewHolder
 import com.example.avitoweather.utils.Utils.downloadImage
 import com.example.avitoweather.utils.Utils.formatTemp
-import com.example.avitoweather.presentation.viewHolders.CurrentTempViewHolder
 
-class CurrentTempListAdapter : ListAdapter<HoursForecast, CurrentTempViewHolder>(CurrentDayWeatherDiffCallback()) {
+class CurrentTempListAdapter :
+    ListAdapter<HoursForecast, CurrentTempViewHolder>(CurrentDayWeatherDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrentTempViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = CurrentTempItemBinding.inflate(inflater, parent, false)
@@ -27,7 +28,7 @@ class CurrentTempListAdapter : ListAdapter<HoursForecast, CurrentTempViewHolder>
         }
         downloadImage(holder.itemView.context, item.icon, holder.binding.weatherIconCurrentTemp)
         val id: Int
-        when (getItemViewType(position)){
+        when (getItemViewType(position)) {
             FIRST_ITEM -> id = R.drawable.left_rounded
             LAST_ITEM -> id = R.drawable.right_rounded
             else -> id = R.color.secondaryColor

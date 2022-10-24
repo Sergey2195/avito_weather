@@ -1,5 +1,5 @@
 package com.example.avitoweather.data.networkDataSource.wrappers
 
-data class BaseUrlWrapper(
+data class WeatherBaseUrlWrapper(
     val baseUrl: String
 )
