@@ -76,6 +76,7 @@ class LocationFragment : Fragment() {
             val text = binding.searchEditText.text.toString()
             if (text.length > 2){
                 viewModel.findAndSetLocation(text)
+                setupVisibleProgressBar(true)
             }
         }
     }
@@ -119,9 +120,14 @@ class LocationFragment : Fragment() {
     }
 
     private fun sendFindAndSetLocation() {
-        viewModel.findAndSetLocation(binding.searchEditText.text.toString())
+        if (locationAdapter.currentList.isEmpty()){
+            return
+        }else{
+            val location = locationAdapter.currentList[0]
+            viewModel.sendLocation(location.lat, location.lon)
+        }
         binding.searchEditText.onEditorAction(EditorInfo.IME_ACTION_DONE)
-        setupVisibleProgressBar(true)
+        requireActivity().onBackPressed()
     }
 
     private fun setupVisibleProgressBar(boolean: Boolean) {
@@ -131,8 +137,8 @@ class LocationFragment : Fragment() {
     private fun observeLocation() {
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.findLocation.collect { listState ->
+                setupVisibleProgressBar(false)
                 if (listState != null || listState?.get(0) !is LocationError) {
-                    setupVisibleProgressBar(false)
                     val newList = mutableListOf<LocationSuccess>()
                     if (listState != null) {
                         for (element in listState){
