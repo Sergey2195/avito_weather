@@ -23,10 +23,14 @@ class LocationRepository @Inject constructor(
         _location = Location(lat, lon, extra)
     }
 
-    override suspend fun getLocation(requestStr: String): LocationState{
-        val result = networkDatasource.loadLocation(requestStr) ?: return LocationError
-        if (result.lon == null || result.lat == null) return LocationError
-        setLocation(result.lat.toString(), result.lon.toString(), false)
-        return LocationSuccess(result.label)
+    override suspend fun getLocation(requestStr: String): List<LocationState>{
+        val result = networkDatasource.loadLocation(requestStr) ?: return listOf(LocationError)
+//        setLocation(result.lat.toString(), result.lon.toString(), false)
+//        return LocationSuccess(result.label)
+        val list = mutableListOf<LocationSuccess>()
+        for (element in result){
+            list.add(LocationSuccess(element.label, element.lon.toString(), element.lat.toString()))
+        }
+        return list.toList()
     }
 }

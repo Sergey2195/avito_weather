@@ -19,13 +19,13 @@ class NetworkDatasource @Inject constructor(
         return weatherApiCalls.loadWeather(location.lat, location.lon, location.extra)
     }
 
-    override suspend fun loadLocation(resource: String): LocationElement?{
+    override suspend fun loadLocation(resource: String): List<LocationElement>?{
         return try {
             val result = locationApiCalls.loadLocationWithQuery(
                 locationApiKeyWrapper.apiKey,
                 resource,
-                1)
-            if (result.data.isEmpty()) null else result.data[0]
+                10)
+            result.data.ifEmpty { null }
         }catch (e: Exception){
             null
         }

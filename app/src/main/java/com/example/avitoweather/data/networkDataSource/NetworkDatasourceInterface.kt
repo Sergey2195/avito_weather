@@ -6,5 +6,5 @@ import com.example.avitoweather.data.networkDataSource.models.locationApi.Locati
 
 interface NetworkDatasourceInterface {
     suspend fun loadData(location: Location):AllDataResponse
-    suspend fun loadLocation(resource: String): LocationElement?
+    suspend fun loadLocation(resource: String): List<LocationElement>?
 }
