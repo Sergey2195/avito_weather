@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.avitoweather.App
 import com.example.avitoweather.R
@@ -21,6 +23,7 @@ import com.example.avitoweather.utils.Utils.formatTemp
 import com.example.avitoweather.presentation.viewModels.WeatherViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 class WeatherFragment : Fragment() {
@@ -48,10 +51,11 @@ class WeatherFragment : Fragment() {
         setupRecyclerViewForecast()
         observeCurrentDayForecast()
         observeForecastDays()
+        observeLoading()
     }
 
     private fun observeForecastDays() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.weatherForecastDays.collect {
                 forecastAdapter.submitList(it)
             }
@@ -59,7 +63,7 @@ class WeatherFragment : Fragment() {
     }
 
     private fun observeCurrentDayForecast() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.weatherCurrentDayForecast.collect {
                 currentTempAdapter.submitList(it)
                 scrollToBegin()
@@ -79,7 +83,7 @@ class WeatherFragment : Fragment() {
     }
 
     private fun observeCurrentTemperature() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.weatherNowFlow.collect {
                 setupCurrentTemperatureUI(it)
             }
@@ -131,6 +135,28 @@ class WeatherFragment : Fragment() {
             LinearLayoutManager.VERTICAL,
             false
         )
+    }
+
+    private fun observeLoading(){
+        lifecycleScope.launch {
+            viewModel.isLoadingFlow.collect{
+                changeVisibility(!it)
+            }
+        }
+    }
+
+    private fun changeVisibility(state: Boolean){
+        with(binding){
+            cityTv.isVisible = state
+            districtTv.isVisible = state
+            currentTemp.isVisible = state
+            currentWeatherIcon.isVisible = state
+            feelsLikeFormatStringTv.isVisible = state
+            titleCurrentTemp.isVisible = state
+            currentTempRv.isVisible = state
+            forecastRv.isVisible = state
+            weatherProgressBar.isVisible = !state
+        }
     }
 
     companion object {

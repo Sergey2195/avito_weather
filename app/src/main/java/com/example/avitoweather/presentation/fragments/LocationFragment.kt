@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.avitoweather.App
 import com.example.avitoweather.R
@@ -24,6 +25,7 @@ import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
 import com.example.avitoweather.utils.Utils.getLocation
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 class LocationFragment : Fragment() {
@@ -52,6 +54,15 @@ class LocationFragment : Fragment() {
         setupClickListeners()
         setupRecyclerView()
         observeLocation()
+        observeLoadingFlow()
+    }
+
+    private fun observeLoadingFlow() {
+        lifecycleScope.launch {
+            viewModel.isLoadingFlow.collect{
+                setupVisibleProgressBar(it)
+            }
+        }
     }
 
     private fun setupRecyclerView() {
@@ -76,13 +87,12 @@ class LocationFragment : Fragment() {
             val text = binding.searchEditText.text.toString()
             if (text.length > 2){
                 viewModel.findAndSetLocation(text)
-                setupVisibleProgressBar(true)
             }
         }
     }
 
     private fun findCurrentLocation() {
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             val result = getLocation(requireContext(), requireActivity())
             if (result.isEmpty()) {
                 showError()
@@ -135,9 +145,8 @@ class LocationFragment : Fragment() {
     }
 
     private fun observeLocation() {
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch {
             viewModel.findLocation.collect { listState ->
-                setupVisibleProgressBar(false)
                 if (listState != null || listState?.get(0) !is LocationError) {
                     val newList = mutableListOf<LocationSuccess>()
                     if (listState != null) {
