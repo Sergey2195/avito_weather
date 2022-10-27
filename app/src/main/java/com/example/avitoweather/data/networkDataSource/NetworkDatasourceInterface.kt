@@ -6,7 +6,8 @@ import com.example.avitoweather.data.networkDataSource.models.locationApi.Locati
 import kotlinx.coroutines.flow.Flow
 
 interface NetworkDatasourceInterface {
-    suspend fun loadData(location: Location):AllDataResponse
+    suspend fun loadData(location: Location):AllDataResponse?
     suspend fun loadLocation(resource: String): List<LocationElement>?
     val isLoadingFlow: Flow<Boolean>
+    val isErrorFlow: Flow<Boolean>
 }

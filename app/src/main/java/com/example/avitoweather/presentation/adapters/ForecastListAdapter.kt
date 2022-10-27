@@ -28,7 +28,6 @@ class ForecastListAdapter :
             downloadImage(holder.itemView.context, item.icon, weatherIcon)
         }
         when (getItemViewType(position)){
-            FIRST_ITEM-> holder.binding.itemLayout.setBackgroundResource(R.drawable.top_rounded)
             LAST_ITEM-> holder.binding.itemLayout.setBackgroundResource(R.drawable.bot_rounded)
             else-> holder.binding.itemLayout.setBackgroundResource(R.color.secondaryColor)
         }

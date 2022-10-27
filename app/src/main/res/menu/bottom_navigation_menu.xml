@@ -6,7 +6,7 @@
         android:icon="@drawable/ic_weather_icon"
         android:title="@string/weather_title"/>
     <item
-        android:id="@+id/navigationItem"
+        android:id="@+id/locationBottomItem"
         android:enabled="true"
         android:icon="@drawable/ic_location_icon"
         android:title="@string/location_title"/>

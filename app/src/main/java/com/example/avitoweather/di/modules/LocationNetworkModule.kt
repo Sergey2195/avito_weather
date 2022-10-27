@@ -1,8 +1,9 @@
-package com.example.avitoweather.di
+package com.example.avitoweather.di.modules
 
 import com.example.avitoweather.data.networkDataSource.apiCall.LocationApiCalls
 import com.example.avitoweather.data.networkDataSource.wrappers.LocationApiKeyWrapper
 import com.example.avitoweather.data.networkDataSource.wrappers.LocationBaseUrlWrapper
+import com.example.avitoweather.di.ApplicationScope
 import com.example.avitoweather.di.qualifier.LocationQualifier
 import dagger.Module
 import dagger.Provides

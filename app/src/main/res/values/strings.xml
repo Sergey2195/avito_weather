@@ -3,10 +3,13 @@
     <string name="weather_title">Погода</string>
     <string name="location_title">Локация</string>
     <string name="enter_city_hint">Введите город</string>
-    <string name="format_temp_min">min %d°</string>
-    <string name="format_temp_max">max %d°</string>
+    <string name="format_temp_min">%d°</string>
+    <string name="format_temp_max">%d°</string>
     <string name="icon_url_string_format">https://yastatic.net/weather/i/icons/funky/dark/%s.svg</string>
     <string name="feels_like_string_format">Ощущается как: %s</string>
     <string name="city_defined">Выбрано текущее месторасположение</string>
     <string name="location_error">По запросу ничего не найдено</string>
+    <string name="recently_request">Недавние запросы:</string>
+    <string name="founded">Найдено:</string>
+    <string name="error_loading">Ошибка при загрузке</string>
 </resources>

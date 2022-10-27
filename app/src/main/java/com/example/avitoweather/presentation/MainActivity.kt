@@ -1,8 +1,8 @@
 package com.example.avitoweather.presentation
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.avitoweather.App
 import com.example.avitoweather.R
@@ -35,10 +35,12 @@ class MainActivity : AppCompatActivity() {
         initialFragment()
     }
 
+    //When activity started load weather fragment
     private fun initialFragment() {
         startFragment(WeatherFragment.newInstance(), WeatherFragment.FRAGMENT_NAME)
     }
 
+    //navigation using the bottom navigation bar
     private fun setupNavigationBottomBar() {
         bottomNavBar = binding.bottomNavigationMenu
         bottomNavBar.setOnItemSelectedListener { item ->
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.popBackStack(WeatherFragment.FRAGMENT_NAME, 0)
                     true
                 }
-                R.id.navigationItem -> {
+                R.id.locationBottomItem -> {
                     startFragment(LocationFragment.newInstance(), LocationFragment.FRAGMENT_NAME)
                     true
                 }
@@ -57,15 +59,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private fun startFragment(fragment: Fragment, fragmentName: String){
+
+    //start a fragment and add it to the stack
+    private fun startFragment(fragment: Fragment, fragmentName: String) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.mainFragmentContainer, fragment)
             .addToBackStack(fragmentName)
             .commit()
     }
 
+    //overriding the onBackPressed method. If the back button is pressed while a weatherItem is
+    // selected, the application is minimized. If locationFragment, then jump to weatherFragment
     override fun onBackPressed() {
-        if (bottomNavBar.selectedItemId == R.id.weatherItem){
+        if (bottomNavBar.selectedItemId == R.id.weatherItem) {
             goHome()
             return
         }
@@ -73,7 +79,8 @@ class MainActivity : AppCompatActivity() {
         bottomNavBar.selectedItemId = R.id.weatherItem
     }
 
-    private fun goHome(){
+    //minimize app
+    private fun goHome() {
         val startMain = Intent(Intent.ACTION_MAIN)
         startMain.addCategory(Intent.CATEGORY_HOME)
         startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK

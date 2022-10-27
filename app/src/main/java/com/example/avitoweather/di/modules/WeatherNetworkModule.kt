@@ -1,9 +1,10 @@
-package com.example.avitoweather.di
+package com.example.avitoweather.di.modules
 
 import com.example.avitoweather.data.networkDataSource.apiCall.WeatherApiCalls
 import com.example.avitoweather.data.networkDataSource.interceptors.LoginInterceptor
 import com.example.avitoweather.data.networkDataSource.wrappers.WeatherBaseUrlWrapper
 import com.example.avitoweather.data.networkDataSource.wrappers.WeatherApiKeyWrapper
+import com.example.avitoweather.di.ApplicationScope
 import com.example.avitoweather.di.qualifier.WeatherQualifier
 import dagger.Module
 import dagger.Provides

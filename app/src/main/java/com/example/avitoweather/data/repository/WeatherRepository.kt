@@ -36,36 +36,34 @@ class WeatherRepository @Inject constructor(
     override val currentDayForecastList: Flow<List<HoursForecast>>
         get() = currentDayForecastListMutableStateFlow.asStateFlow()
 
+    override val isLoadingError: Flow<Boolean> = networkDatasource.isErrorFlow
+
     private var nowTime: Long = 0
 
     override suspend fun loadData() {
-        try {
-            val result = networkDatasource.loadData(locationRepository.location)
-            if (result.actualWeather == null) return
-            setupNowTime(result.nowTime ?: 0)
-            val namesOfGeoObject = NamesOfGeoObject(
-                result.geoObject?.locality?.name ?: "",
-                result.geoObject?.district?.name ?: ""
-            )
-            val actualWeather = CurrentDayWeather(
-                time = result.nowTime.toString(),
-                feelsLike = result.actualWeather.feelsLike ?: 0,
-                icon = result.actualWeather.icon,
-                temp = result.actualWeather.temp ?: 0,
-                namesOfGeoObject = namesOfGeoObject
-            )
-            currentDayForecastListMutableStateFlow.value = configureHoursForecast(result)
-            currentDayWeatherDataMutableFlow.value = actualWeather
+        val result = networkDatasource.loadData(locationRepository.getLastLocation()) ?: return
+        if (result.actualWeather == null) return
+        setupNowTime(result.nowTime ?: 0)
+        val namesOfGeoObject = NamesOfGeoObject(
+            result.geoObject?.locality?.name ?: "",
+            result.geoObject?.district?.name ?: ""
+        )
+        val actualWeather = CurrentDayWeather(
+            time = result.nowTime.toString(),
+            feelsLike = result.actualWeather.feelsLike ?: 0,
+            icon = result.actualWeather.icon,
+            temp = result.actualWeather.temp ?: 0,
+            namesOfGeoObject = namesOfGeoObject
+        )
+        currentDayForecastListMutableStateFlow.value = configureHoursForecast(result)
+        currentDayWeatherDataMutableFlow.value = actualWeather
 
-            val listForecastDays = transformListForecastToForecastWeather(result.forecast)
-            forecastWeatherDataMutableStateFlow.value = listForecastDays
-            Log.i("TAG", "loadData finished")
-        } catch (e: Exception) {
-            throw RuntimeException("load data exception $e")
-        }
+        val listForecastDays = transformListForecastToForecastWeather(result.forecast)
+        forecastWeatherDataMutableStateFlow.value = listForecastDays
+        Log.i("TAG", "loadData finished")
     }
 
-    private fun transformHourElementToHourForecast(item: HourElement): HoursForecast{
+    private fun transformHourElementToHourForecast(item: HourElement): HoursForecast {
         return HoursForecast(
             item.hour,
             item.hourTS,
@@ -74,15 +72,15 @@ class WeatherRepository @Inject constructor(
         )
     }
 
-    private fun configureHoursForecast(result: AllDataResponse): List<HoursForecast>{
+    private fun configureHoursForecast(result: AllDataResponse): List<HoursForecast> {
         val twoDaysList = mutableListOf<HoursForecast>()
-        result.forecast[0].hourElement.forEach{ item->
-            if (item.hourTS >= nowTime){
+        result.forecast[0].hourElement.forEach { item ->
+            if (item.hourTS >= nowTime) {
                 twoDaysList.add(transformHourElementToHourForecast(item))
             }
         }
-        result.forecast[1].hourElement.forEach{ item->
-            if (twoDaysList.size <= 24){
+        result.forecast[1].hourElement.forEach { item ->
+            if (twoDaysList.size <= 24) {
                 twoDaysList.add(transformHourElementToHourForecast(item))
             }
         }
@@ -93,7 +91,7 @@ class WeatherRepository @Inject constructor(
         return nowTime
     }
 
-    private fun setupNowTime(currentTime: Long){
+    private fun setupNowTime(currentTime: Long) {
         nowTime = currentTime
     }
 

@@ -7,10 +7,12 @@ import kotlinx.coroutines.Dispatchers
 
 class App : Application() {
 
-    val appScope by lazy {
+    //CoroutineScope associated with the lifecycle of an activity
+    private val appScope by lazy {
         CoroutineScope(Dispatchers.IO)
     }
 
+    //component for dependency injection
     val component by lazy {
         DaggerApplicationComponent.factory().create(
             this,

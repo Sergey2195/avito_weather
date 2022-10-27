@@ -1,6 +1,7 @@
-package com.example.avitoweather.di
+package com.example.avitoweather.di.modules
 
 import androidx.lifecycle.ViewModel
+import com.example.avitoweather.di.ViewModelKey
 import com.example.avitoweather.presentation.viewModels.LocationViewModel
 import com.example.avitoweather.presentation.viewModels.WeatherViewModel
 import dagger.Binds

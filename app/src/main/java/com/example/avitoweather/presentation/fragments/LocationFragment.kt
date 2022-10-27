@@ -1,8 +1,8 @@
 package com.example.avitoweather.presentation.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,14 +18,17 @@ import com.example.avitoweather.App
 import com.example.avitoweather.R
 import com.example.avitoweather.databinding.FragmentLocationBinding
 import com.example.avitoweather.domain.entites.LocationError
+import com.example.avitoweather.domain.entites.LocationState
 import com.example.avitoweather.domain.entites.LocationSuccess
 import com.example.avitoweather.presentation.adapters.LocationListAdapter
 import com.example.avitoweather.presentation.viewModels.LocationViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
 import com.example.avitoweather.utils.Utils.getLocation
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class LocationFragment : Fragment() {
@@ -55,11 +58,12 @@ class LocationFragment : Fragment() {
         setupRecyclerView()
         observeLocation()
         observeLoadingFlow()
+        findOrShowHistory()
     }
 
     private fun observeLoadingFlow() {
         lifecycleScope.launch {
-            viewModel.isLoadingFlow.collect{
+            viewModel.isLoadingFlow.collect {
                 setupVisibleProgressBar(it)
             }
         }
@@ -73,21 +77,48 @@ class LocationFragment : Fragment() {
             false
         )
         locationAdapter.itemClickListener = {
-            viewModel.sendLocation(it.lat, it.lon)
+            viewModel.sendLocation(it.lat, it.lon, it.label)
             requireActivity().onBackPressed()
+        }
+        locationAdapter.deleteItemClickListener = {
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.deleteElementWithLabel(it.label)
+                getHistoryListAndSubmit()
+            }
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupClickListeners() {
         keyboardClickListener()
         binding.locationImageView.setOnClickListener {
             findCurrentLocation()
         }
         binding.searchEditText.addTextChangedListener {
-            val text = binding.searchEditText.text.toString()
-            if (text.length > 2){
-                viewModel.findAndSetLocation(text)
-            }
+            findOrShowHistory()
+        }
+        binding.searchEditText.setOnClickListener {
+            findOrShowHistory()
+        }
+    }
+
+    private fun findOrShowHistory() {
+        val text = binding.searchEditText.text.toString()
+        val isHistory = text.length <= 2
+        locationAdapter.isHistory = isHistory
+        if (!isHistory) {
+            viewModel.findAndGetLocation(text)
+            binding.titleSearch.text = getString(R.string.founded)
+        } else {
+            getHistoryListAndSubmit()
+            binding.titleSearch.text = getString(R.string.recently_request)
+        }
+    }
+
+    private fun getHistoryListAndSubmit() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = viewModel.getHistoryList()
+            locationAdapter.submitList(result)
         }
     }
 
@@ -97,7 +128,8 @@ class LocationFragment : Fragment() {
             if (result.isEmpty()) {
                 showError()
             } else {
-                viewModel.sendLocation(result[0], result[1])
+                //исправить на более читабельное
+                viewModel.sendLocation(lat = result[0], lon = result[1], label = CURRENT_POSITION)
                 withContext(Dispatchers.Main) {
                     Snackbar.make(requireView(), R.string.city_defined, Snackbar.LENGTH_SHORT)
                         .show()
@@ -130,11 +162,9 @@ class LocationFragment : Fragment() {
     }
 
     private fun sendFindAndSetLocation() {
-        if (locationAdapter.currentList.isEmpty()){
-            return
-        }else{
+        if (locationAdapter.currentList.isEmpty()) return else {
             val location = locationAdapter.currentList[0]
-            viewModel.sendLocation(location.lat, location.lon)
+            viewModel.sendLocation(location.lat, location.lon, location.label)
         }
         binding.searchEditText.onEditorAction(EditorInfo.IME_ACTION_DONE)
         requireActivity().onBackPressed()
@@ -147,20 +177,27 @@ class LocationFragment : Fragment() {
     private fun observeLocation() {
         lifecycleScope.launch {
             viewModel.findLocation.collect { listState ->
-                if (listState != null || listState?.get(0) !is LocationError) {
-                    val newList = mutableListOf<LocationSuccess>()
-                    if (listState != null) {
-                        for (element in listState){
-                            if (element is LocationError){
-                                return@collect
-                            }
-                            newList.add(element as LocationSuccess)
-                        }
-                    }
-                    locationAdapter.submitList(newList)
+                if (!locationAdapter.isHistory) {
+                    locationAdapter.submitList(newList(listState))
                 }
             }
         }
+    }
+
+    private fun newList(listState: List<LocationState>?): List<LocationSuccess> {
+        if (listState != null || listState?.get(0) !is LocationError) {
+            val newList = mutableListOf<LocationSuccess>()
+            if (listState != null) {
+                for (element in listState) {
+                    if (element is LocationError) {
+                        return emptyList()
+                    }
+                    newList.add(element as LocationSuccess)
+                }
+            }
+            return newList
+        }
+        return emptyList()
     }
 
     private suspend fun delayAndBackPressed() {
@@ -175,5 +212,6 @@ class LocationFragment : Fragment() {
         }
 
         const val FRAGMENT_NAME = "LocationFragment"
+        private const val CURRENT_POSITION = "Current Position"
     }
 }

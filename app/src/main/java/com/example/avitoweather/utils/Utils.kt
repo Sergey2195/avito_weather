@@ -14,7 +14,10 @@ import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 
+//utils
 object Utils {
+
+    //fun to download weather icons
     fun downloadImage(context: Context, imageSubUrl: String, icon: ImageView) {
         val string = context.getString(R.string.icon_url_string_format, imageSubUrl)
         val imageLoader = ImageLoader.Builder(context)
@@ -45,6 +48,7 @@ object Utils {
         }
     }
 
+    //find current position
     suspend fun getLocation(context: Context, activity: Activity): List<String> {
         val fusedLocationProviderClient: FusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(context)

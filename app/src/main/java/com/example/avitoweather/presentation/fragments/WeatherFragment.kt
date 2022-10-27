@@ -2,7 +2,6 @@ package com.example.avitoweather.presentation.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,12 +17,14 @@ import com.example.avitoweather.databinding.FragmentWeatherBinding
 import com.example.avitoweather.domain.entites.CurrentDayWeather
 import com.example.avitoweather.presentation.adapters.CurrentTempListAdapter
 import com.example.avitoweather.presentation.adapters.ForecastListAdapter
-import com.example.avitoweather.utils.Utils.downloadImage
-import com.example.avitoweather.utils.Utils.formatTemp
 import com.example.avitoweather.presentation.viewModels.WeatherViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
+import com.example.avitoweather.utils.Utils.downloadImage
+import com.example.avitoweather.utils.Utils.formatTemp
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class WeatherFragment : Fragment() {
@@ -54,6 +55,7 @@ class WeatherFragment : Fragment() {
         observeLoading()
     }
 
+    //collects data to display a 7-day weather forecast and sends it to RecyclerView
     private fun observeForecastDays() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.weatherForecastDays.collect {
@@ -62,6 +64,7 @@ class WeatherFragment : Fragment() {
         }
     }
 
+    //collects data to display the weather forecast for the current day and sends it to RecyclerView
     private fun observeCurrentDayForecast() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.weatherCurrentDayForecast.collect {
@@ -71,8 +74,9 @@ class WeatherFragment : Fragment() {
         }
     }
 
-    private suspend fun scrollToBegin(){
-        withContext(Dispatchers.Main){
+    //rewinds the recycler view to its starting position
+    private suspend fun scrollToBegin() {
+        withContext(Dispatchers.Main) {
             binding.currentTempRv.smoothScrollToPosition(0)
         }
     }
@@ -82,6 +86,7 @@ class WeatherFragment : Fragment() {
         component.injectWeatherFragment(this)
     }
 
+    //collects data to display the weather forecast for the current day and sends it to views
     private fun observeCurrentTemperature() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.weatherNowFlow.collect {
@@ -90,6 +95,7 @@ class WeatherFragment : Fragment() {
         }
     }
 
+    //setting the desired data for the current day
     private suspend fun setupCurrentTemperatureUI(data: CurrentDayWeather) =
         withContext(Dispatchers.Main) {
             with(binding) {
@@ -137,16 +143,33 @@ class WeatherFragment : Fragment() {
         )
     }
 
-    private fun observeLoading(){
+    //tracking the end of the download and the occurrence of an error.In case of an error, a snackbar is shown
+    private fun observeLoading() {
         lifecycleScope.launch {
-            viewModel.isLoadingFlow.collect{
+            viewModel.isLoadingFlow.collect {
                 changeVisibility(!it)
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.getIsLoadingErrorFlow().collect { isError ->
+                if (isError) {
+                    changeVisibility(false)
+                    binding.weatherProgressBar.isVisible = false
+                    showSnackbarError()
+                }
             }
         }
     }
 
-    private fun changeVisibility(state: Boolean){
-        with(binding){
+    private fun showSnackbarError() {
+        if (view != null) {
+            Snackbar.make(requireView(), getString(R.string.error_loading), Snackbar.LENGTH_LONG)
+                .show()
+        }
+    }
+
+    private fun changeVisibility(state: Boolean) {
+        with(binding) {
             cityTv.isVisible = state
             districtTv.isVisible = state
             currentTemp.isVisible = state
@@ -156,6 +179,9 @@ class WeatherFragment : Fragment() {
             currentTempRv.isVisible = state
             forecastRv.isVisible = state
             weatherProgressBar.isVisible = !state
+            forecastTitle.isVisible = state
+            minTitle.isVisible = state
+            maxTitle.isVisible = state
         }
     }
 

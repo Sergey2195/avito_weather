@@ -9,6 +9,7 @@ interface WeatherRepositoryInterface {
     val currentDayWeatherData: Flow<CurrentDayWeather>
     val forecastWeatherData: Flow<List<ForecastDay>>
     val currentDayForecastList: Flow<List<HoursForecast>>
+    val isLoadingError: Flow<Boolean>
     suspend fun loadData()
     suspend fun getTime(): Long
 }
