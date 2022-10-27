@@ -12,4 +12,6 @@
     <string name="recently_request">Недавние запросы:</string>
     <string name="founded">Найдено:</string>
     <string name="error_loading">Ошибка при загрузке</string>
+    <string name="error_location">Проверьте ,пожалуйста, разрешение на геолокацию</string>
+    <string name="today">Сегодня</string>
 </resources>

@@ -7,5 +7,11 @@ data class GeoObject(
     val district: NameGeoObject,
 
     @SerializedName("locality")
-    val locality: NameGeoObject
+    val locality: NameGeoObject,
+
+    @SerializedName("province")
+    val province: NameGeoObject,
+
+    @SerializedName("country")
+    val county: NameGeoObject
 )

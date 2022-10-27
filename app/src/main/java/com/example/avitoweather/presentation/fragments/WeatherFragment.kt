@@ -2,6 +2,7 @@ package com.example.avitoweather.presentation.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,9 +21,11 @@ import com.example.avitoweather.presentation.adapters.ForecastListAdapter
 import com.example.avitoweather.presentation.viewModels.WeatherViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
 import com.example.avitoweather.utils.Utils.downloadImage
+import com.example.avitoweather.utils.Utils.formatProvinceAndCountry
 import com.example.avitoweather.utils.Utils.formatTemp
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -46,7 +49,9 @@ class WeatherFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initial()
         viewModel.loadData()
+        setupRefreshLayout()
         observeCurrentTemperature()
         setupRecyclerViewCurrent()
         setupRecyclerViewForecast()
@@ -54,6 +59,46 @@ class WeatherFragment : Fragment() {
         observeForecastDays()
         observeLoading()
     }
+
+    private fun initial() {
+        changeVisibility(false)
+    }
+
+    //setup refresh layout
+    private fun setupRefreshLayout() {
+        binding.refreshLayout.setOnRefreshListener {
+            viewModel.loadData()
+        }
+    }
+
+    //collects data to display the weather forecast for the current day and sends it to views
+    private fun observeCurrentTemperature() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.weatherNowFlow.collect {
+                setupCurrentTemperatureUI(it)
+            }
+        }
+    }
+
+    //setting the desired data for the current day
+    private suspend fun setupCurrentTemperatureUI(data: CurrentDayWeather) =
+        withContext(Dispatchers.Main) {
+            with(binding) {
+                cityTv.text = data.namesOfGeoObject.locality
+                configureDistrict(data.namesOfGeoObject.district)
+                currentTemp.text = formatTemp(data.temp)
+                provinceAndCountryTv.text = formatProvinceAndCountry(
+                    data.namesOfGeoObject.province,
+                    data.namesOfGeoObject.country
+                )
+                feelsLikeFormatStringTv.text = requireActivity().getString(
+                    R.string.feels_like_string_format,
+                    formatTemp(data.feelsLike)
+                )
+                setupIcons(requireContext(), data.icon, currentWeatherIcon)
+            }
+        }
+
 
     //collects data to display a 7-day weather forecast and sends it to RecyclerView
     private fun observeForecastDays() {
@@ -77,6 +122,7 @@ class WeatherFragment : Fragment() {
     //rewinds the recycler view to its starting position
     private suspend fun scrollToBegin() {
         withContext(Dispatchers.Main) {
+            delay(50)
             binding.currentTempRv.smoothScrollToPosition(0)
         }
     }
@@ -86,29 +132,14 @@ class WeatherFragment : Fragment() {
         component.injectWeatherFragment(this)
     }
 
-    //collects data to display the weather forecast for the current day and sends it to views
-    private fun observeCurrentTemperature() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.weatherNowFlow.collect {
-                setupCurrentTemperatureUI(it)
-            }
+    private fun configureDistrict(district: String) {
+        if (district.isEmpty()) {
+            binding.districtTv.visibility = View.GONE
+        } else {
+            binding.districtTv.visibility = View.VISIBLE
+            binding.districtTv.text = district
         }
     }
-
-    //setting the desired data for the current day
-    private suspend fun setupCurrentTemperatureUI(data: CurrentDayWeather) =
-        withContext(Dispatchers.Main) {
-            with(binding) {
-                currentTemp.text = formatTemp(data.temp)
-                districtTv.text = data.namesOfGeoObject.district
-                cityTv.text = data.namesOfGeoObject.locality
-                feelsLikeFormatStringTv.text = requireActivity().getString(
-                    R.string.feels_like_string_format,
-                    formatTemp(data.feelsLike)
-                )
-                setupIcons(requireContext(), data.icon, currentWeatherIcon)
-            }
-        }
 
     private suspend fun setupIcons(context: Context, iconURL: String, icon: ImageView) {
         withContext(Dispatchers.Main) {
@@ -147,15 +178,17 @@ class WeatherFragment : Fragment() {
     private fun observeLoading() {
         lifecycleScope.launch {
             viewModel.isLoadingFlow.collect {
+                viewModel.getIsLoadingErrorFlow()
                 changeVisibility(!it)
             }
         }
         lifecycleScope.launch {
             viewModel.getIsLoadingErrorFlow().collect { isError ->
                 if (isError) {
-                    changeVisibility(false)
-                    binding.weatherProgressBar.isVisible = false
+                    binding.baseConstraintLayout.visibility = View.INVISIBLE
                     showSnackbarError()
+                }else{
+                    binding.baseConstraintLayout.visibility = View.VISIBLE
                 }
             }
         }
@@ -178,10 +211,11 @@ class WeatherFragment : Fragment() {
             titleCurrentTemp.isVisible = state
             currentTempRv.isVisible = state
             forecastRv.isVisible = state
-            weatherProgressBar.isVisible = !state
             forecastTitle.isVisible = state
             minTitle.isVisible = state
             maxTitle.isVisible = state
+            provinceAndCountryTv.isVisible = state
+            refreshLayout.isRefreshing = !state
         }
     }
 

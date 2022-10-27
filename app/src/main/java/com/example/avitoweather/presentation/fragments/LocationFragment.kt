@@ -25,16 +25,19 @@ import com.example.avitoweather.presentation.viewModels.LocationViewModel
 import com.example.avitoweather.presentation.viewModelsFactory.ViewModelFactory
 import com.example.avitoweather.utils.Utils.getLocation
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class LocationFragment : Fragment() {
 
     private lateinit var binding: FragmentLocationBinding
     private val locationAdapter = LocationListAdapter()
+    private val internetScope = CoroutineScope(Dispatchers.IO)
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        internetScope.cancel()
+    }
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -61,6 +64,7 @@ class LocationFragment : Fragment() {
         findOrShowHistory()
     }
 
+    //loading progress display
     private fun observeLoadingFlow() {
         lifecycleScope.launch {
             viewModel.isLoadingFlow.collect {
@@ -76,9 +80,15 @@ class LocationFragment : Fragment() {
             LinearLayoutManager.VERTICAL,
             false
         )
+        setupClickListenersRV()
+    }
+
+    private fun setupClickListenersRV() {
         locationAdapter.itemClickListener = {
             viewModel.sendLocation(it.lat, it.lon, it.label)
-            requireActivity().onBackPressed()
+            lifecycleScope.launch(Dispatchers.Main) {
+                backPressed()
+            }
         }
         locationAdapter.deleteItemClickListener = {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -88,6 +98,7 @@ class LocationFragment : Fragment() {
         }
     }
 
+    //setupClickListeners
     @SuppressLint("ClickableViewAccessibility")
     private fun setupClickListeners() {
         keyboardClickListener()
@@ -102,12 +113,14 @@ class LocationFragment : Fragment() {
         }
     }
 
+    //when the text length is 3 or more, it is sent to the server to get the list of found locations,
+    // otherwise the request history is loaded
     private fun findOrShowHistory() {
         val text = binding.searchEditText.text.toString()
         val isHistory = text.length <= 2
         locationAdapter.isHistory = isHistory
         if (!isHistory) {
-            viewModel.findAndGetLocation(text)
+            internetScope.launch { viewModel.findAndGetLocation(text) }
             binding.titleSearch.text = getString(R.string.founded)
         } else {
             getHistoryListAndSubmit()
@@ -122,25 +135,34 @@ class LocationFragment : Fragment() {
         }
     }
 
+    //determination of the current position, in case of an error, a snackbar is shown,
+    // otherwise the current position is set and the transition to the fragment with the weather
     private fun findCurrentLocation() {
         lifecycleScope.launch(Dispatchers.IO) {
             val result = getLocation(requireContext(), requireActivity())
-            if (result.isEmpty()) {
-                showError()
-            } else {
-                //исправить на более читабельное
-                viewModel.sendLocation(lat = result[0], lon = result[1], label = CURRENT_POSITION)
-                withContext(Dispatchers.Main) {
-                    Snackbar.make(requireView(), R.string.city_defined, Snackbar.LENGTH_SHORT)
-                        .show()
-                    delayAndBackPressed()
+            withContext(Dispatchers.Main) {
+                if (result.isEmpty()) {
+                    showSnackbar(true)
+                } else {
+                    val lat = result[0]
+                    val lon = result[1]
+                    viewModel.sendLocation(lat, lon, CURRENT_POSITION)
+                    showSnackbar(false)
                 }
             }
+
         }
     }
 
-    private fun showError() {
-        Snackbar.make(requireView(), "Произошла ошибка", Snackbar.LENGTH_SHORT).show()
+    private fun showSnackbar(isError: Boolean) {
+        if (isError) {
+            Snackbar.make(requireView(), getString(R.string.error_location), Snackbar.LENGTH_SHORT)
+                .show()
+        } else {
+            Snackbar.make(requireView(), R.string.city_defined, Snackbar.LENGTH_SHORT)
+                .show()
+            backPressed()
+        }
     }
 
     override fun onCreateView(
@@ -151,17 +173,19 @@ class LocationFragment : Fragment() {
         return binding.root
     }
 
+    //when the search button is pressed on the keyboard, the first address in the list is selected
     private fun keyboardClickListener() {
         binding.searchEditText.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                sendFindAndSetLocation()
+                searchButtonOnKeyboard()
                 return@OnEditorActionListener true
             }
             false
         })
     }
 
-    private fun sendFindAndSetLocation() {
+    //when you click on the search button, if the list of found locations is not empty, the first one in the list is selected
+    private fun searchButtonOnKeyboard() {
         if (locationAdapter.currentList.isEmpty()) return else {
             val location = locationAdapter.currentList[0]
             viewModel.sendLocation(location.lat, location.lon, location.label)
@@ -174,6 +198,7 @@ class LocationFragment : Fragment() {
         binding.progressBar.isVisible = boolean
     }
 
+    //if it is not currently a history mode, then the received locations are sent to the recyclerView
     private fun observeLocation() {
         lifecycleScope.launch {
             viewModel.findLocation.collect { listState ->
@@ -200,8 +225,7 @@ class LocationFragment : Fragment() {
         return emptyList()
     }
 
-    private suspend fun delayAndBackPressed() {
-        delay(Snackbar.LENGTH_SHORT.toLong())
+    private fun backPressed() {
         requireActivity().onBackPressed()
     }
 

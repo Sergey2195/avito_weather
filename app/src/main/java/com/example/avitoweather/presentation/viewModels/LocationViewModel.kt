@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LocationViewModel @Inject constructor(
@@ -32,11 +31,9 @@ class LocationViewModel @Inject constructor(
 
     //sends the address as a string and receives a list of found addresses as locationState.
     //writes the resulting list to stateflow. The location fragment is collected and passed to the recyclerView
-    fun findAndGetLocation(str: String) {
-        scope.launch {
-            val result = getLocationWithString.invoke(str)
-            findLocationMutableStateFlow.value = result
-        }
+    suspend fun findAndGetLocation(str: String) {
+        val result = getLocationWithString.invoke(str)
+        findLocationMutableStateFlow.value = result
     }
 
     //returns history from the database

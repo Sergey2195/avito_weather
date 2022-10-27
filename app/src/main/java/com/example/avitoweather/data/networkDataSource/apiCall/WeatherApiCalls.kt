@@ -7,8 +7,8 @@ import retrofit2.http.Query
 interface WeatherApiCalls {
     @GET("forecast")
     suspend fun loadWeather(
-        @Query("lat")lat: String,
-        @Query("lon")lon: String,
-        @Query("extra")extra: Boolean
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("extra") extra: Boolean
     ): AllDataResponse
 }

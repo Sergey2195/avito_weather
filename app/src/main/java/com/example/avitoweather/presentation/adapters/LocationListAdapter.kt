@@ -9,7 +9,8 @@ import com.example.avitoweather.domain.entites.LocationSuccess
 import com.example.avitoweather.presentation.diffUtils.LocationDiffCallback
 import com.example.avitoweather.presentation.viewHolders.LocationViewHolder
 
-class LocationListAdapter: ListAdapter<LocationSuccess, LocationViewHolder>(LocationDiffCallback()) {
+class LocationListAdapter :
+    ListAdapter<LocationSuccess, LocationViewHolder>(LocationDiffCallback()) {
 
     var itemClickListener: ((LocationSuccess) -> Unit)? = null
     var deleteItemClickListener: ((LocationSuccess) -> Unit)? = null
@@ -25,19 +26,19 @@ class LocationListAdapter: ListAdapter<LocationSuccess, LocationViewHolder>(Loca
         setupVisibility(holder)
         val item = getItem(position)
         setupClickListeners(holder, item)
-        with(holder.binding){
+        with(holder.binding) {
             labelTv.text = item.label
         }
     }
 
-    private fun setupVisibility(holder: LocationViewHolder){
-        with(holder.binding){
+    private fun setupVisibility(holder: LocationViewHolder) {
+        with(holder.binding) {
             isHistoryImageView.isVisible = isHistory
             deleteIcon.isVisible = isHistory
         }
     }
 
-    private fun setupClickListeners(holder: LocationViewHolder, item: LocationSuccess){
+    private fun setupClickListeners(holder: LocationViewHolder, item: LocationSuccess) {
         holder.itemView.setOnClickListener {
             itemClickListener?.invoke(item)
         }

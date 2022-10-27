@@ -1,6 +1,5 @@
 package com.example.avitoweather.data.networkDataSource
 
-import android.util.Log
 import com.example.avitoweather.data.networkDataSource.apiCall.LocationApiCalls
 import com.example.avitoweather.data.networkDataSource.apiCall.WeatherApiCalls
 import com.example.avitoweather.data.networkDataSource.models.AllDataResponse
@@ -33,11 +32,10 @@ class NetworkDatasource @Inject constructor(
             val result = weatherApiCalls.loadWeather(location.lat, location.lon, location.extra)
             isErrorMutableFlow.value = false
             result
-        }catch (e: Exception){
+        } catch (e: Exception) {
             isErrorMutableFlow.value = true
-            Log.i("ERROR rep", "${isErrorMutableFlow.value}")
             null
-        }finally {
+        } finally {
             changeValueIsLoadingState(false)
         }
     }
@@ -48,17 +46,15 @@ class NetworkDatasource @Inject constructor(
             val result = locationApiCalls.loadLocationWithQuery(
                 locationApiKeyWrapper.apiKey,
                 resource,
-                10
+                5
             )
-            if (result.data.isEmpty()){
-                Log.i("ERROR", "data is empty")
+            if (result.data.isEmpty()) {
                 isErrorMutableFlow.value = true
                 return null
             }
             isErrorMutableFlow.value = false
             result.data
         } catch (e: Exception) {
-            isErrorMutableFlow.value = true
             null
         } finally {
             changeValueIsLoadingState(false)

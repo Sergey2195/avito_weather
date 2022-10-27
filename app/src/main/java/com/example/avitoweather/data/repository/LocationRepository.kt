@@ -30,7 +30,7 @@ class LocationRepository @Inject constructor(
     //suspend function returning history from database
     override suspend fun getHistoryOfLocation(): List<LocationSuccess> {
         return mapper.transformListLocationDbEntityToLocationSuccess(
-            locationDao.getAllFromDb().reversed()
+            locationDao.getAllFromDb().reversed().filter { it.label != CURRENT_POSITION }
         )
     }
 
@@ -39,12 +39,9 @@ class LocationRepository @Inject constructor(
         locationDao.deleteWithLabel(label)
     }
 
-    //writing the location to the database if it is not the current location
+    //writing the location to the database
     override fun addToDatabase(lat: String, lon: String, extra: Boolean, label: String) {
         scope.launch {
-            if (label == LABEL_CURRENT_POSITION) {
-                return@launch
-            }
             val res = locationDao.findWithLabel(label)
             if (res != null) {
                 locationDao.deleteWithLabel(label)
@@ -69,7 +66,7 @@ class LocationRepository @Inject constructor(
         return mapper.transformListLocationElementToListLocationSuccess(result)
     }
 
-    companion object {
-        private const val LABEL_CURRENT_POSITION = "Current Position"
+    companion object{
+        private const val CURRENT_POSITION = "Current Position"
     }
 }

@@ -1,141 +1,153 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".presentation.fragments.LocationFragment"
-    android:background="@color/primaryColor">
+    android:id="@+id/refreshLayout"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".presentation.fragments.LocationFragment"
+        android:background="@color/primaryColor">
 
-        <TextView
-            android:id="@+id/city_tv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="30dp"
-            android:textAlignment="center"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <TextView
-            android:id="@+id/districtTv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/city_tv"
-            android:textAlignment="center"
-            android:textStyle="italic"/>
-        <TextView
-            android:id="@+id/current_temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="30sp"
-            app:layout_constraintEnd_toStartOf="@+id/current_weather_icon"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/current_weather_icon"
-            app:layout_constraintBottom_toBottomOf="@+id/current_weather_icon" />
-
-        <ImageView
-            android:id="@+id/current_weather_icon"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/current_temp"
-            app:layout_constraintTop_toBottomOf="@+id/districtTv" />
-        <TextView
-            android:id="@+id/feelsLikeFormatStringTv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/feels_like_string_format"
-            app:layout_constraintTop_toBottomOf="@id/current_weather_icon"
-            android:paddingBottom="8dp"
-            android:textStyle="italic"
-            android:textAlignment="center"
-            android:textSize="16sp"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/titleCurrentTemp"
-            android:text="Погода на текущий день:"
-            android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/feelsLikeFormatStringTv"
-            android:layout_marginHorizontal="10dp"
-            android:paddingTop="16dp"
-            android:paddingStart="16dp"
-            android:background="@drawable/top_rounded" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/current_temp_rv"
-            app:layout_constraintTop_toBottomOf="@+id/titleCurrentTemp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:orientation="horizontal"
-            android:layout_marginHorizontal="10dp"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/forecast_title"
-            app:layout_constraintTop_toBottomOf="@+id/current_temp_rv"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="40dp"
-            android:layout_marginHorizontal="10dp"
-            android:paddingStart="16dp"
-            android:paddingVertical="8dp"
-            android:textSize="16sp"
-            android:background="@drawable/top_rounded"
-            android:text="Погода на 7 дней:"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/maxTitle"
-            android:textSize="16sp"
-            app:layout_constraintTop_toTopOf="@id/forecast_title"
-            app:layout_constraintBottom_toBottomOf="@+id/forecast_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginEnd="50dp"
-            android:text="макс"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/minTitle"
-            android:textSize="16sp"
-            app:layout_constraintTop_toTopOf="@id/forecast_title"
-            app:layout_constraintBottom_toBottomOf="@+id/forecast_title"
-            app:layout_constraintEnd_toStartOf="@id/maxTitle"
-            android:layout_marginEnd="40dp"
-            android:text="мин"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/forecast_rv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="10dp"
-            android:layout_marginHorizontal="10dp"
-            app:layout_constraintTop_toBottomOf="@+id/forecast_title"
-            app:layout_constraintBottom_toBottomOf="parent" />
-
-        <ProgressBar
-            android:id="@+id/weatherProgressBar"
-            style="?android:attr/progressBarStyle"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:visibility="invisible"
-            android:foregroundGravity="center"/>
+            android:id="@+id/baseConstraintLayout"
+            android:visibility="invisible">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+            <TextView
+                android:id="@+id/city_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:textAlignment="center"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/districtTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/city_tv"
+                android:textAlignment="center"
+                android:textStyle="italic"
+                android:layout_margin="6dp"
+                android:textSize="20sp"/>
+            <TextView
+                android:id="@+id/provinceAndCountryTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/districtTv"
+                android:textAlignment="center"
+                android:layout_margin="6dp"
+                android:textStyle="italic"/>
+
+            <TextView
+                android:id="@+id/current_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                app:layout_constraintEnd_toStartOf="@+id/current_weather_icon"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/current_weather_icon"
+                app:layout_constraintBottom_toBottomOf="@+id/current_weather_icon" />
+
+            <ImageView
+                android:id="@+id/current_weather_icon"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toEndOf="@+id/current_temp"
+                app:layout_constraintTop_toBottomOf="@+id/provinceAndCountryTv" />
+            <TextView
+                android:id="@+id/feelsLikeFormatStringTv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/feels_like_string_format"
+                app:layout_constraintTop_toBottomOf="@id/current_weather_icon"
+                android:paddingBottom="8dp"
+                android:textStyle="italic"
+                android:textAlignment="center"
+                android:textSize="16sp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/titleCurrentTemp"
+                android:text="Погода на текущий день:"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/feelsLikeFormatStringTv"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="30dp"
+                android:paddingVertical="8dp"
+                android:paddingStart="16dp"
+                android:background="@drawable/top_rounded" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/current_temp_rv"
+                app:layout_constraintTop_toBottomOf="@+id/titleCurrentTemp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="10dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/forecast_title"
+                app:layout_constraintTop_toBottomOf="@+id/current_temp_rv"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="30dp"
+                android:layout_marginHorizontal="10dp"
+                android:paddingStart="16dp"
+                android:paddingVertical="8dp"
+                android:textSize="16sp"
+                android:background="@drawable/top_rounded"
+                android:text="Погода на 7 дней:"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/maxTitle"
+                android:textSize="16sp"
+                app:layout_constraintTop_toTopOf="@id/forecast_title"
+                app:layout_constraintBottom_toBottomOf="@+id/forecast_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="50dp"
+                android:text="макс"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/minTitle"
+                android:textSize="16sp"
+                app:layout_constraintTop_toTopOf="@id/forecast_title"
+                app:layout_constraintBottom_toBottomOf="@+id/forecast_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="140dp"
+                android:text="мин"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/forecast_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="10dp"
+                android:layout_marginHorizontal="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/forecast_title"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -48,6 +48,10 @@ object Utils {
         }
     }
 
+    fun formatProvinceAndCountry(province: String, country: String): String{
+        return "$province, $country"
+    }
+
     //find current position
     suspend fun getLocation(context: Context, activity: Activity): List<String> {
         val fusedLocationProviderClient: FusedLocationProviderClient =

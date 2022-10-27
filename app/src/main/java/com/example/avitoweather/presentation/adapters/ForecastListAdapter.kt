@@ -7,9 +7,9 @@ import com.example.avitoweather.R
 import com.example.avitoweather.databinding.ForecastItemBinding
 import com.example.avitoweather.domain.entites.ForecastDay
 import com.example.avitoweather.presentation.diffUtils.ForecastDayDiffCallback
+import com.example.avitoweather.presentation.viewHolders.ForecastViewHolder
 import com.example.avitoweather.utils.Utils.downloadImage
 import com.example.avitoweather.utils.Utils.formatDate
-import com.example.avitoweather.presentation.viewHolders.ForecastViewHolder
 
 class ForecastListAdapter :
     ListAdapter<ForecastDay, ForecastViewHolder>(ForecastDayDiffCallback()) {
@@ -27,9 +27,13 @@ class ForecastListAdapter :
             tempMax.text = holder.itemView.context.getString(R.string.format_temp_max, item.tempMax)
             downloadImage(holder.itemView.context, item.icon, weatherIcon)
         }
-        when (getItemViewType(position)){
-            LAST_ITEM-> holder.binding.itemLayout.setBackgroundResource(R.drawable.bot_rounded)
-            else-> holder.binding.itemLayout.setBackgroundResource(R.color.secondaryColor)
+        when (getItemViewType(position)) {
+            LAST_ITEM -> holder.binding.itemLayout.setBackgroundResource(R.drawable.bot_rounded)
+            FIRST_ITEM -> {
+                holder.binding.dateItem.textSize = 16f
+                holder.binding.dateItem.text = holder.itemView.context.getString(R.string.today)
+            }
+            else -> holder.binding.itemLayout.setBackgroundResource(R.color.secondaryColor)
         }
     }
 
